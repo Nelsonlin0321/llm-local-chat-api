@@ -4,11 +4,12 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation.utils import GenerationConfig
 from .payload import ChatPayload
-VERSION  = "v1"
+
+MODEL  = "Baichuan2-13B-Chat-4bits"
 
 router = APIRouter(
-    prefix=f"/{VERSION}/chat/completions",
-    tags=[VERSION],
+    prefix=f"/{MODEL}/chat/completions",
+    tags=[MODEL],
 )
 
 
