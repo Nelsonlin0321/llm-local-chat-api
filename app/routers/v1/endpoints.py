@@ -1,9 +1,9 @@
 from uuid import uuid4
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation.utils import GenerationConfig
-from .payload import ChatMessage
+from .payload import ChatPayload
 VERSION  = "v1"
 
 router = APIRouter(
@@ -33,13 +33,16 @@ model.generation_config = GenerationConfig.from_pretrained(MODEL_PATH,
                                                            local_files_only=True)
 
 @router.post("/")
-async def chat(chat_message:ChatMessage):
-    answer = model.chat(tokenizer, chat_message.messages)
+async def chat(chat_payload:ChatPayload):
+
+    chat_dict  = chat_payload.model_dump(mode='python')
+
+    answer = model.chat(tokenizer, chat_dict['messages'])
     response = {
         "id": str(uuid4()),
         "object": "chat.completion",
         "created": None,
-        "model": chat_message.model,
+        "model": chat_payload.model,
         "usage": {
             "prompt_tokens": None,
             "completion_tokens": None,
