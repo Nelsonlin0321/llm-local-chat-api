@@ -1,0 +1,72 @@
+import shutil
+from uuid import uuid4
+from fastapi import APIRouter, File, HTTPException, UploadFile
+from .payload import PayLoad
+from . import utils
+from chroma_engine import ChromaEngine
+from app.routers.baichuan2_13b_chat_4bits.endpoints import model
+
+ROUTE_NAME = "documents"
+DOCUMENT_DIR = ""
+STATIC_DIR = "/Users/nelsonlin/Desktop/workspaces/llm-local-chat-api/app/static"
+
+router = APIRouter(
+    prefix=f"/{ROUTE_NAME}",
+    tags=[ROUTE_NAME],
+)
+
+
+chroma_engine = ChromaEngine()
+
+
+def save_file(file):
+    file_path = f"{STATIC_DIR}/{file.filename}"
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    return file_path
+
+
+@router.post(f"/ingest_file")
+async def ingest_file(file: UploadFile = File(...)):
+    try:
+        save_file_path = save_file(file=file)
+        chroma_engine.ingest_file(
+            file_path=save_file_path, sentence_size=256, overlapping_num=2, overwrite=True)
+    # pylint: disable=broad-exception-caught
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post(f"/retrieval_generate")
+async def retrieval_generate(pay_load: PayLoad):
+    # try:
+    if pay_load.context:
+        context = pay_load.context
+    else:
+        context = pay_load.question
+
+    retrieved_result = chroma_engine.vector_search(
+        pay_load.file_name, query_text=context, limit=5)
+
+    prompt = utils.generate_prompt(retrieved_result)
+
+    messages = [
+        {'role': 'system',
+         'content': prompt,
+         },
+        {"role": "user",
+         "content": pay_load.question},
+    ]
+
+    completion = model.generate_answer(
+        model_name="Baichuan2-13B", messages=messages)
+
+    answer = completion.choices[0].message.content
+
+    return {
+        "context": pay_load.context,
+        "question": pay_load.question,
+        "file_name": pay_load.file_name,
+        "answer": answer,
+        "uuid": str(uuid4())}
