@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import Baichuan2_13B_Chat_4bits
+from app.routers import baichuan2_13b_chat_4bits
 
 app = FastAPI()
 
@@ -22,7 +22,7 @@ app.add_middleware(
 
 PREFIX = "/api"
 
-app.include_router(Baichuan2_13B_Chat_4bits.endpoints.router, prefix=PREFIX)
+app.include_router(baichuan2_13b_chat_4bits.endpoints.router, prefix=PREFIX)
 
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
