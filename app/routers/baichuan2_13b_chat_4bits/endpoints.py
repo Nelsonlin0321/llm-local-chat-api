@@ -29,9 +29,10 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     local_files_only=True)
 
-model.generation_config = GenerationConfig.from_pretrained(MODEL_PATH,
-                                                           revision="v2.0",
-                                                           local_files_only=True)
+model.generation_config = GenerationConfig.from_pretrained(
+    MODEL_PATH,
+    revision="v2.0",
+    local_files_only=True)
 
 
 @router.post("/")
