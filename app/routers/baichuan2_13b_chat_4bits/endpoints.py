@@ -5,7 +5,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation.utils import GenerationConfig
 from .payload import ChatPayload
 
-MODEL  = "Baichuan2-13B-Chat-4bits"
+MODEL = "Baichuan2-13B-Chat-4bits"
 
 router = APIRouter(
     prefix=f"/{MODEL}/chat/completions",
@@ -16,10 +16,10 @@ router = APIRouter(
 MODEL_PATH = "/mnt/nvme1n1p2/huggingface-models/baichuan-inc-Baichuan2-13B-Chat-4bits"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH,
-    revision="v2.0",
-    use_fast=False,
-    trust_remote_code=True,
-    local_files_only=True)
+                                          revision="v2.0",
+                                          use_fast=False,
+                                          trust_remote_code=True,
+                                          local_files_only=True)
 
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_PATH,
@@ -33,10 +33,11 @@ model.generation_config = GenerationConfig.from_pretrained(MODEL_PATH,
                                                            revision="v2.0",
                                                            local_files_only=True)
 
-@router.post("/")
-async def chat(chat_payload:ChatPayload):
 
-    chat_dict  = chat_payload.model_dump(mode='python')
+@router.post("/")
+async def chat(chat_payload: ChatPayload):
+
+    chat_dict = chat_payload.model_dump(mode='python')
 
     answer = model.chat(tokenizer, chat_dict['messages'])
     response = {
