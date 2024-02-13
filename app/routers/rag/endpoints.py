@@ -1,14 +1,14 @@
 import shutil
 from uuid import uuid4
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from app.routers.baichuan2_13b_chat_4bits.endpoints import model
 from .payload import PayLoad
 from . import utils
-from chroma_engine import ChromaEngine
-from app.routers.baichuan2_13b_chat_4bits.endpoints import model
+from .chroma_engine import ChromaEngine
 
-ROUTE_NAME = "documents"
+ROUTE_NAME = "RAG"
 DOCUMENT_DIR = ""
-STATIC_DIR = "/Users/nelsonlin/Desktop/workspaces/llm-local-chat-api/app/static"
+STATIC_DIR = "/home/clive/workspace/llm-local-chat-api/app/static"
 
 router = APIRouter(
     prefix=f"/{ROUTE_NAME}",
@@ -27,18 +27,18 @@ def save_file(file):
     return file_path
 
 
-@router.post(f"/ingest_file")
+@router.post("/ingest_file")
 async def ingest_file(file: UploadFile = File(...)):
-    try:
-        save_file_path = save_file(file=file)
-        chroma_engine.ingest_file(
-            file_path=save_file_path, sentence_size=256, overlapping_num=2, overwrite=True)
-    # pylint: disable=broad-exception-caught
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # try:
+    save_file_path = save_file(file=file)
+    chroma_engine.ingest_file(
+        file_path=save_file_path, sentence_size=256, overlapping_num=2, overwrite=True)
+    # # pylint: disable=broad-exception-caught
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.post(f"/retrieval_generate")
+@router.post("/retrieval_generate")
 async def retrieval_generate(pay_load: PayLoad):
     # try:
     if pay_load.context:
@@ -62,7 +62,7 @@ async def retrieval_generate(pay_load: PayLoad):
     completion = model.generate_answer(
         model_name="Baichuan2-13B", messages=messages)
 
-    answer = completion.choices[0].message.content
+    answer = completion['choices'][0]['message']['content']
 
     return {
         "context": pay_load.context,

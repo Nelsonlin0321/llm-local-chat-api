@@ -161,3 +161,4 @@ cython_debug/
 dependencies
 documents
 app/data
+app/static/

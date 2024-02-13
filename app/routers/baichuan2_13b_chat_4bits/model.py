@@ -1,3 +1,4 @@
+import torch
 from uuid import uuid4
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation.utils import GenerationConfig
