@@ -1,9 +1,10 @@
 from datetime import datetime
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import baichuan2_13b_chat_4bits, rag
 
-from app.routers import baichuan2_13b_chat_4bits
 
 app = FastAPI()
 
@@ -23,7 +24,9 @@ app.add_middleware(
 PREFIX = "/api"
 
 app.include_router(baichuan2_13b_chat_4bits.endpoints.router, prefix=PREFIX)
+app.include_router(rag.endpoints.router, prefix=PREFIX)
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 start_time = datetime.utcnow()
