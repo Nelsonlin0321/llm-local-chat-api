@@ -11,8 +11,11 @@ class SentencesToEmbeddings():
             model_path).to(self.device)
 
     def __call__(self, sentences: List[str]):
-        encoded_input = self.tokenizer(sentences, padding=True,
-                                       truncation=True, return_tensors='pt')
+        encoded_input = self.tokenizer(sentences,
+                                       padding="max_length",
+                                       truncation=True,
+                                       max_length=512,
+                                       return_tensors='pt')
         encoded_input = encoded_input.to(self.device)
 
         with torch.no_grad():
