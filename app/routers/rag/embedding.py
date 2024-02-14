@@ -5,7 +5,8 @@ import torch
 
 class SentencesToEmbeddings():
     def __init__(self, model_path='/mnt/nvme1n1p2/huggingface-models/BAAI/bge-large-zh-v1.5') -> None:
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModel.from_pretrained(
             model_path).to(self.device)

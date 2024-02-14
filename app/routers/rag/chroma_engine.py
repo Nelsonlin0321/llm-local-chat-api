@@ -125,6 +125,9 @@ class ChromaEngine():
             ids=ids
         )
 
+        return {'message':f"The file: {file_name} is ingested successfully",
+                "number_chunk":len(chunks)}
+
     def list_document(self):
         return self.document_collection.get()
 

@@ -29,13 +29,15 @@ def save_file(file):
 
 @router.post("/ingest_file")
 async def ingest_file(file: UploadFile = File(...)):
-    # try:
     save_file_path = save_file(file=file)
-    chroma_engine.ingest_file(
-        file_path=save_file_path, sentence_size=256, overlapping_num=2, overwrite=True)
-    # # pylint: disable=broad-exception-caught
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=str(e)) from e
+
+    message = chroma_engine.ingest_file(
+        file_path=save_file_path,
+        sentence_size=256,
+        overlapping_num=2,
+        overwrite=True)
+    
+    return message
 
 
 @router.post("/retrieval_generate")
