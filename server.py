@@ -26,7 +26,7 @@ PREFIX = "/api"
 app.include_router(baichuan2_13b_chat_4bits.endpoints.router, prefix=PREFIX)
 app.include_router(rag.endpoints.router, prefix=PREFIX)
 
-app.mount("/static", StaticFiles(directory="./app/static"), name="static")
+app.mount("/files", StaticFiles(directory="./app/files"), name="files")
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 start_time = datetime.utcnow()
