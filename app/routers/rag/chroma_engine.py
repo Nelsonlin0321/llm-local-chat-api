@@ -30,6 +30,31 @@ def extract_texts(doc):
     return texts
 
 
+def parse_docx(file_path, sentence_size=1024, overlapping_num=2) -> List[str]:
+    doc = docx.Document(file_path)
+    tables = extract_tables(doc)
+
+    elements = []
+    table_indices = []
+    for index, element in enumerate(doc.element.body):
+        if element.tag.endswith("tbl"):
+            table_indices.append(index)
+        elements.append(element.text)
+
+    for index, table in enumerate(tables):
+        table_index = table_indices[index]
+        elements[table_index] = table
+
+    elements = [
+        element for element in elements if isinstance(element, str)]
+
+    chunks = consolidate_elements(
+        elements,
+        sentence_size=sentence_size,
+        overlapping_num=overlapping_num)
+
+    return chunks
+
 def consolidate_elements(elements, sentence_size=256, overlapping_num=3):
 
     final_sentence_list = []
@@ -80,7 +105,7 @@ class ChromaEngine():
             ids=[file_name]
         )
 
-        chunks = self.parse_docx(
+        chunks = parse_docx(
             file_path, sentence_size=sentence_size,
             overlapping_num=overlapping_num)
 
@@ -99,31 +124,6 @@ class ChromaEngine():
             metadatas=metadatas,
             ids=ids
         )
-
-    def parse_docx(self, file_path, sentence_size=256, overlapping_num=2) -> List[str]:
-        doc = docx.Document(file_path)
-        tables = extract_tables(doc)
-
-        elements = []
-        table_indices = []
-        for index, element in enumerate(doc.element.body):
-            if element.tag.endswith("tbl"):
-                table_indices.append(index)
-            elements.append(element.text)
-
-        for index, table in enumerate(tables):
-            table_index = table_indices[index]
-            elements[table_index] = table
-
-        elements = [
-            element for element in elements if isinstance(element, str)]
-
-        chunks = consolidate_elements(
-            elements,
-            sentence_size=sentence_size,
-            overlapping_num=overlapping_num)
-
-        return chunks
 
     def list_document(self):
         return self.document_collection.get()

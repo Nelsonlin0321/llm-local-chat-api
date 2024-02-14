@@ -1,13 +1,13 @@
 import shutil
 from uuid import uuid4
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File,UploadFile
+# from fastapi import HTTPException
 from app.routers.baichuan2_13b_chat_4bits.endpoints import model
 from .payload import PayLoad
 from . import utils
 from .chroma_engine import ChromaEngine
 
 ROUTE_NAME = "RAG"
-DOCUMENT_DIR = ""
 STATIC_DIR = "/home/clive/workspace/llm-local-chat-api/app/static"
 
 router = APIRouter(
