@@ -3,12 +3,12 @@ from uuid import uuid4
 from fastapi import APIRouter, File,UploadFile
 # from fastapi import HTTPException
 from app.routers.baichuan2_13b_chat_4bits.endpoints import model
-from .payload import PayLoad
+from .payload import RetrievalLoad
 from . import utils
 from .chroma_engine import ChromaEngine
 
 ROUTE_NAME = "RAG"
-STATIC_DIR = "/home/clive/workspace/llm-local-chat-api/app/static"
+FILES_DIR = "/home/clive/workspace/llm-local-chat-api/app/files"
 
 router = APIRouter(
     prefix=f"/{ROUTE_NAME}",
@@ -20,7 +20,7 @@ chroma_engine = ChromaEngine()
 
 
 def save_file(file):
-    file_path = f"{STATIC_DIR}/{file.filename}"
+    file_path = f"{FILES_DIR}/{file.filename}"
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -36,12 +36,11 @@ async def ingest_file(file: UploadFile = File(...)):
         sentence_size=256,
         overlapping_num=2,
         overwrite=True)
-    
     return message
 
 
 @router.post("/retrieval_generate")
-async def retrieval_generate(pay_load: PayLoad):
+async def retrieval_generate(pay_load: RetrievalLoad):
     # try:
     if pay_load.context:
         context = pay_load.context
@@ -72,3 +71,8 @@ async def retrieval_generate(pay_load: PayLoad):
         "file_name": pay_load.file_name,
         "answer": answer,
         "uuid": str(uuid4())}
+
+
+@router.get("/document")
+async def get_documents():
+    return chroma_engine.list_document()
