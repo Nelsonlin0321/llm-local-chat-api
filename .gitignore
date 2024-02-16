@@ -163,3 +163,4 @@ documents
 app/data
 app/static/
 app/files
+app/chroma-db

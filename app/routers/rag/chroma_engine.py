@@ -82,7 +82,7 @@ def consolidate_elements(elements, sentence_size=256, overlapping_num=3):
 
 
 class ChromaEngine():
-    def __init__(self, db_path="/home/clive/workspace/llm-local-chat-api/app/data") -> None:
+    def __init__(self, db_path="/home/clive/workspace/llm-local-chat-api/app/chroma-db") -> None:
         self.chroma_client = chromadb.PersistentClient(path=db_path)
         self.document_collection = self.chroma_client.get_or_create_collection(
             name="documents")

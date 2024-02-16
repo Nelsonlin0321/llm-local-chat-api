@@ -47,6 +47,7 @@ async def ingest_file(file: UploadFile = File(...)):
         sentence_size=256,
         overlapping_num=2,
         overwrite=True)
+    
     return message
 
 
@@ -61,14 +62,12 @@ async def retrieval_generate(pay_load: RetrievalLoad):
     retrieved_result = chroma_engine.vector_search(
         pay_load.file_name, query_text=context, limit=5)
 
-    prompt = utils.generate_prompt(retrieved_result)
+    prompt = utils.generate_prompt(retrieved_result,question=pay_load.question)
 
     messages = [
-        {'role': 'system',
+        {'role': 'user"',
          'content': prompt,
-         },
-        {"role": "user",
-         "content": pay_load.question},
+         }
     ]
 
     completion = model.generate_answer(
