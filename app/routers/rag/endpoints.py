@@ -1,11 +1,13 @@
+import os
+import boto3
 import shutil
 from uuid import uuid4
 from fastapi import APIRouter, File,UploadFile
-# from fastapi import HTTPException
 from app.routers.baichuan2_13b_chat_4bits.endpoints import model
 from .payload import RetrievalLoad
 from . import utils
 from .chroma_engine import ChromaEngine
+
 
 ROUTE_NAME = "RAG"
 FILES_DIR = "/home/clive/workspace/llm-local-chat-api/app/files"
@@ -17,6 +19,13 @@ router = APIRouter(
 
 
 chroma_engine = ChromaEngine()
+
+s3 = boto3.client('s3')
+
+
+def upload_file_to_s3(file_path, object_name):
+    s3.upload_file(file_path, "cloudfront-aws-bucket",
+                    os.path.join("chinese-local-rag", object_name))
 
 
 def save_file(file):
@@ -30,6 +39,8 @@ def save_file(file):
 @router.post("/ingest_file")
 async def ingest_file(file: UploadFile = File(...)):
     save_file_path = save_file(file=file)
+    
+    upload_file_to_s3(save_file_path,os.path.basename(save_file_path))
 
     message = chroma_engine.ingest_file(
         file_path=save_file_path,
@@ -73,6 +84,11 @@ async def retrieval_generate(pay_load: RetrievalLoad):
         "uuid": str(uuid4())}
 
 
-@router.get("/document")
+@router.get("/documents")
 async def get_documents():
-    return chroma_engine.list_document()
+    documents = chroma_engine.list_document()
+
+    doc_metas = documents['metadatas']
+    count = len(doc_metas)
+
+    return {"results":doc_metas,"count":count}

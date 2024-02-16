@@ -1,3 +1,4 @@
+import dotenv
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -5,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import baichuan2_13b_chat_4bits, rag
 
+dotenv.load_dotenv(".env")
 
 app = FastAPI()
 
