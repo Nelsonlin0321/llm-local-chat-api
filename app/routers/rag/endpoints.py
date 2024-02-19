@@ -3,7 +3,8 @@ import boto3
 import shutil
 from uuid import uuid4
 from fastapi import APIRouter, File,UploadFile
-from app.routers.baichuan2_13b_chat_4bits.endpoints import model
+# from app.routers.baichuan2_13b_chat_4bits.endpoints import model
+from app.routers.chatglm3_6b.endpoints import model
 from .payload import RetrievalLoad
 from . import utils
 from .chroma_engine import ChromaEngine
@@ -70,8 +71,7 @@ async def retrieval_generate(pay_load: RetrievalLoad):
          }
     ]
 
-    completion = model.generate_answer(
-        model_name="Baichuan2-13B", messages=messages)
+    completion = model.generate_answer(messages=messages)
 
     answer = completion['choices'][0]['message']['content']
 
