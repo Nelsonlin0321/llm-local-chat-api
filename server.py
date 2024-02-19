@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import baichuan2_13b_chat_4bits, rag
+from app.routers import baichuan2_13b_chat_4bits,chatglm3_6b, rag
 
 dotenv.load_dotenv(".env")
 
@@ -25,6 +25,7 @@ app.add_middleware(
 
 PREFIX = "/api"
 
+app.include_router(chatglm3_6b.endpoints.router, prefix=PREFIX)
 app.include_router(baichuan2_13b_chat_4bits.endpoints.router, prefix=PREFIX)
 app.include_router(rag.endpoints.router, prefix=PREFIX)
 
@@ -42,4 +43,4 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run(app, host="192.168.60.86", port=5100)
