@@ -2,8 +2,7 @@ from fastapi import APIRouter
 from app.payload import ChatPayload
 from .model import Model
 
-
-MODEL = "Baichuan2-13B-Chat-4bits"
+MODEL = "mistral-7b-instruct"
 
 router = APIRouter(
     prefix=f"/{MODEL}/chat/completions",
@@ -11,7 +10,7 @@ router = APIRouter(
 )
 
 
-MODEL_PATH = "/mnt/nvme1n1p2/huggingface-models/baichuan-inc-Baichuan2-13B-Chat-4bits"
+MODEL_PATH = "/mnt/nvme1n1p2/huggingface-models/mistralai/Mistral-7B-Instruct-v0.2"
 
 model = Model(model_path=MODEL_PATH)
 

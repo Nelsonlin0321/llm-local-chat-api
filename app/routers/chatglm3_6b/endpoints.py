@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from .payload import ChatPayload
+from app.payload import ChatPayload
 from .model import Model
+
 
 MODEL = "chatglm3-6b"
 

@@ -29,5 +29,5 @@ class ChatMessage(BaseModel):
     content: str
 
 class ChatPayload(BaseModel):
-    model:str = "chatglm3-6b"
+    model:str = "Mistral-7B-Instruct-v0.2"
     messages: List[ChatMessage]=TESTING_MESSAGES

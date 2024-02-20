@@ -18,15 +18,19 @@ class Model():
             device_map="auto",
             torch_dtype=torch.bfloat16,
             trust_remote_code=True,
-            local_files_only=True)
+            local_files_only=True).eval()
 
         self.model.generation_config = GenerationConfig.from_pretrained(
             model_path,
             revision="v2.0",
             local_files_only=True)
+        
 
+    @torch.no_grad
     def generate_answer(self, messages, model_name="Baichuan2-13B"):
+
         answer = self.model.chat(self.tokenizer, messages)
+
         response = {
             "id": str(uuid4()),
             "object": "chat.completion",
