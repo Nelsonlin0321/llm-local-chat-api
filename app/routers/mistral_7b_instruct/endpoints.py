@@ -17,10 +17,8 @@ model = Model(model_path=MODEL_PATH)
 
 @router.post("/")
 async def chat(chat_payload: ChatPayload):
-
     chat_dict = chat_payload.model_dump(mode='python')
 
-    response = model.generate_answer(
-        model_name=chat_payload.model, messages=chat_dict['messages'])
+    response = model.generate_answer(messages=chat_dict['messages'])
 
     return response

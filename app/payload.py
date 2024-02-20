@@ -14,7 +14,7 @@ TESTING_MESSAGES = [
         },
         {
             "role": "user",
-            "content": "把答案简短一点"
+            "content": "make the answer brief"
         }
     ]
 
@@ -29,5 +29,4 @@ class ChatMessage(BaseModel):
     content: str
 
 class ChatPayload(BaseModel):
-    model:str = "Mistral-7B-Instruct-v0.2"
     messages: List[ChatMessage]=TESTING_MESSAGES

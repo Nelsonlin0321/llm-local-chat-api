@@ -6,14 +6,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 def get_gpu_with_most_memory():
     device_count = torch.cuda.device_count()
     if device_count == 0:
-        print(" GPUs available.")
-        return None
+        raise Exception("GPUs available.")
+        
 
-    min_memory_allocated=0
+    min_memory_allocated=float("inf")
     max_memory_device = None
 
     for i in range(device_count):
-        device = torch.device(f"cuda:{i}")
+        device = f"cuda:{i}"
         memory_allocated = torch.cuda.memory_allocated(device)
         if min_memory_allocated >= memory_allocated:
             min_memory_allocated = memory_allocated
@@ -26,6 +26,8 @@ class Model():
         
         self.device = get_gpu_with_most_memory()
 
+        # self.device = "cuda:0"
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
 
         self.model = AutoModelForCausalLM.from_pretrained(model_path).to(self.device).half().eval()
@@ -36,8 +38,10 @@ class Model():
         encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
         model_inputs = encodeds.to(self.device)
 
-        generated_ids = self.model.generate(model_inputs, max_new_tokens=32*1000, 
-                                            do_sample=True,pad_token_id=self.tokenizer.eos_token_id)
+        generated_ids = self.model.generate(model_inputs,
+                                            max_new_tokens=1024,
+                                            do_sample=True,
+                                            pad_token_id=self.tokenizer.eos_token_id)
 
         total_tokens = generated_ids.shape[1]
 
@@ -45,8 +49,13 @@ class Model():
 
         response = decoded[0]
 
-        result = re.findall(r'</s>(.*?)</s>', response)[0]
 
+        result = re.findall(r'</s>(.*?)</s>', response)
+        if result:
+            result = result[0]
+        else:
+            result = response
+            
         answer = result.split("[/INST]")[1].strip()
 
         response = {
