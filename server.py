@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from app.routers import baichuan2_13b_chat_4bits
 from app.routers import chatglm3_6b
-from app.routers import mistral_7b_instruct
+# from app.routers import mistral_7b_instruct
 from app.routers import rag
 
 
@@ -31,7 +31,7 @@ PREFIX = "/api"
 
 app.include_router(chatglm3_6b.endpoints.router, prefix=PREFIX)
 # app.include_router(baichuan2_13b_chat_4bits.endpoints.router, prefix=PREFIX)
-app.include_router(mistral_7b_instruct.endpoints.router, prefix=PREFIX)
+# app.include_router(mistral_7b_instruct.endpoints.router, prefix=PREFIX)
 app.include_router(rag.endpoints.router, prefix=PREFIX)
 
 app.mount("/files", StaticFiles(directory="./app/files"), name="files")
